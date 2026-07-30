@@ -1,10 +1,18 @@
-import { cart, removeFromCart, updateDeliveryOption } from "../../data/cart.js";
+import {
+  cart,
+  removeFromCart,
+  updateDeliveryOption,
+  updateQuantity,
+} from "../../data/cart.js";
 import { products, getProduct } from "../../data/products.js";
 import { formatCurrency } from "../utils/money.js";
 import dayjs from "https://unpkg.com/supersimpledev@8.5.0/dayjs/esm/index.js";
-import { deliveryOptions, getDeliveryOption } from "../../data/deliveryOptions.js";
-import {renderPaymentSummary} from './paymentSummary.js';
-import {updateCartQuantity} from '../checkout.js'
+import {
+  deliveryOptions,
+  getDeliveryOption,
+} from "../../data/deliveryOptions.js";
+import { renderPaymentSummary } from "./paymentSummary.js";
+import { updateCartQuantity } from "../checkout.js";
 
 export function renderOrderSummary() {
   let cartSummaryHTML = "";
@@ -44,11 +52,15 @@ export function renderOrderSummary() {
                 <div class="product-quantity
                 js-product-quantity-${matchingProduct.id}">
                     <span>
-                        Quantity: <span class="quantity-label">${cartItem.quantity}</span>
+                        Quantity: <span class="quantity-label js-quantity-label-${matchingProduct.id}">${cartItem.quantity}</span>
                     </span>
-                    <span class="update-quantity-link link-primary">
+                    <span class="update-quantity-link link-primary js-update-link"
+                    data-product-id="${matchingProduct.id}">
                         Update
                     </span>
+                    <input class="quantity-input js-quantity-input-${matchingProduct.id}">
+                    <span class="save-quantity-link link-primary js-save-link"
+                    data-product-id="${matchingProduct.id}">Save</span>
                     <span class="delete-quantity-link link-primary
                     js-delete-link js-delete-link-${matchingProduct.id}"
                     data-product-id="${matchingProduct.id}">
@@ -108,6 +120,7 @@ export function renderOrderSummary() {
 
   document.querySelector(".js-order-summary").innerHTML = cartSummaryHTML;
 
+  // Delete Link
   document.querySelectorAll(".js-delete-link").forEach((link) => {
     link.addEventListener("click", () => {
       const productId = link.dataset.productId;
@@ -116,7 +129,7 @@ export function renderOrderSummary() {
         `.js-cart-item-container-${productId}`,
       );
       container.remove();
-      
+
       renderPaymentSummary();
       updateCartQuantity();
     });
@@ -130,5 +143,70 @@ export function renderOrderSummary() {
       renderPaymentSummary();
     });
   });
-}
 
+  document.querySelectorAll(".js-update-link").forEach((link) => {
+    link.addEventListener("click", () => {
+      const productId = link.dataset.productId;
+
+      const container = document.querySelector(
+        `.js-cart-item-container-${productId}`,
+      );
+
+      container.classList.add("is-editing-quantity");
+    });
+  });
+
+  function handleQuantityUpdate(productId) {
+    const quantityInput = document.querySelector(
+      `.js-quantity-input-${productId}`,
+    );
+
+    const newQuantity = Number(quantityInput.value);
+
+    if (newQuantity < 0 || newQuantity >= 1000) {
+      alert("Quantity must be at least 0 and less than 1000");
+      return;
+    } else if (newQuantity === 0) {
+      removeFromCart(productId);
+      const container = document.querySelector(
+        `.js-cart-item-container-${productId}`,
+      );
+      container.remove();
+
+      renderPaymentSummary();
+      updateCartQuantity();
+    } else {
+      updateQuantity(productId, newQuantity);
+
+      const container = document.querySelector(
+        `.js-cart-item-container-${productId}`,
+      );
+      container.classList.remove("is-editing-quantity");
+
+      const quantityLabel = document.querySelector(
+        `.js-quantity-label-${productId}`,
+      );
+      quantityLabel.innerHTML = newQuantity;
+
+      updateCartQuantity();
+      renderPaymentSummary();
+      updateCartQuantity();
+    }
+  }
+
+  document.querySelectorAll(".js-save-link").forEach((link) => {
+    link.addEventListener("click", () => {
+      const productId = link.dataset.productId;
+      handleQuantityUpdate(productId);
+    });
+  });
+
+  document.querySelectorAll(".quantity-input").forEach((input) => {
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        const productId = input.className.match(/js-quantity-input-(\S+)/)[1];
+        handleQuantityUpdate(productId);
+      }
+    });
+  });
+}
