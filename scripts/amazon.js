@@ -1,4 +1,4 @@
-import { cart, addToCart, getTotalQuantity } from "../data/cart.js";
+import { cart, addToCart, getTotalCartQuantity } from "../data/cart.js";
 import { products, loadProducts } from "../data/products.js";
 import { formatCurrency } from "./utils/money.js";
 
@@ -71,7 +71,7 @@ function renderProductsGrid() {
 
   function updateCartQuantity(addedMessageTimeoutId) {
     
-    const cartQuantity = getTotalQuantity();
+    const cartQuantity = getTotalCartQuantity();
 
     document.querySelector(".js-cart-quantity").innerHTML = cartQuantity;
   }

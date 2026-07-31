@@ -1,13 +1,8 @@
 import { renderOrderSummary } from "./checkout/orderSummary.js";
 import { renderPaymentSummary } from "./checkout/paymentSummary.js";
 import { loadProducts, loadProductsFetch } from "../data/products.js";
-import { cart, loadCart, getTotalQuantity } from "../data/cart.js";
-
-export function updateCartQuantity(){
-  const cartQuantity = getTotalQuantity();
-
-  document.querySelector('.js-return-to-home-link').innerHTML = `${cartQuantity} items`;
-}
+import { cart, loadCart, getTotalCartQuantity } from "../data/cart.js";
+import { renderCheckoutHeader } from "./checkout/checkoutHeader.js";
 
 
 async function loadPage() {
@@ -24,7 +19,7 @@ async function loadPage() {
     console.log(`${error} \nPlease try again.`);
   }
 
-  updateCartQuantity();
+  renderCheckoutHeader();
   renderOrderSummary();
   renderPaymentSummary();
 }

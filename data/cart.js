@@ -92,7 +92,7 @@ export function loadCart(fun) {
   xhr.send();
 }
 
-export function getTotalQuantity(){
+export function getTotalCartQuantity(){
   let cartQuantity = 0;
   cart.forEach((cartItem) => {
     cartQuantity += cartItem.quantity;
