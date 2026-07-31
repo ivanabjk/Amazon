@@ -1,6 +1,4 @@
-function isWeekend(date){
-    const datOfWeek = date.format('dddd');
+export function isWeekend(date){
+    const dayOfWeek = date.format('dddd');
     return dayOfWeek === 'Saturday' || dayOfWeek === 'Sunday';
 }
-
-export default isWeekend;
