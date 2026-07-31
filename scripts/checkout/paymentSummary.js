@@ -21,6 +21,8 @@ export function renderPaymentSummary() {
   const totalCents = totalBeforeTaxCents + taxCents;
 
   const totalQuantity = getTotalQuantity();
+  
+  
   const paymentSummaryHTML = `
         <div class="payment-summary-title">
             Order Summary

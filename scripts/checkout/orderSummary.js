@@ -125,11 +125,8 @@ export function renderOrderSummary() {
     link.addEventListener("click", () => {
       const productId = link.dataset.productId;
       removeFromCart(productId);
-      const container = document.querySelector(
-        `.js-cart-item-container-${productId}`,
-      );
-      container.remove();
 
+      renderOrderSummary();
       renderPaymentSummary();
       updateCartQuantity();
     });
@@ -168,11 +165,8 @@ export function renderOrderSummary() {
       return;
     } else if (newQuantity === 0) {
       removeFromCart(productId);
-      const container = document.querySelector(
-        `.js-cart-item-container-${productId}`,
-      );
-      container.remove();
 
+      renderOrderSummary();
       renderPaymentSummary();
       updateCartQuantity();
     } else {
