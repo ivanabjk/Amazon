@@ -10,7 +10,7 @@ import dayjs from "https://unpkg.com/supersimpledev@8.5.0/dayjs/esm/index.js";
 import {
   deliveryOptions,
   getDeliveryOption,
-  calculateDeliveryDate
+  calculateDeliveryDate,
 } from "../../data/deliveryOptions.js";
 import { renderPaymentSummary } from "./paymentSummary.js";
 import { renderCheckoutHeader } from "./checkoutHeader.js";
@@ -42,10 +42,10 @@ export function renderOrderSummary() {
             src="${matchingProduct.image}">
 
             <div class="cart-item-details">
-                <div class="product-name">
+                <div class="product-name js-product-name-${matchingProduct.id}">
                     ${matchingProduct.name}
                 </div>
-                <div class="product-price">
+                <div class="product-price js-product-price-${matchingProduct.id}">
                     ${matchingProduct.getPrice()}
                 </div>
                 <div class="product-quantity
@@ -83,7 +83,6 @@ export function renderOrderSummary() {
     let html = "";
 
     deliveryOptions.forEach((deliveryOption) => {
-      
       const dateString = calculateDeliveryDate(deliveryOption);
 
       const priceString =
@@ -94,12 +93,14 @@ export function renderOrderSummary() {
       const isChecked = deliveryOption.id === cartItem.deliveryOptionId;
 
       html += `
-        <div class="delivery-option js-delivery-option"
+        <div class="delivery-option js-delivery-option
+          js-delivery-option-${matchingProduct.id}-${deliveryOption.id}"
         data-product-id="${matchingProduct.id}"
         data-delivery-option-id="${deliveryOption.id}">
             <input type="radio" 
             ${isChecked ? "checked" : ""}
-            class="delivery-option-input"
+            class="delivery-option-input
+            js-delivery-option-input-${matchingProduct.id}-${deliveryOption.id}"
             name="delivery-option-${matchingProduct.id}">
             <div>
             <div class="delivery-option-date">
@@ -124,9 +125,9 @@ export function renderOrderSummary() {
       const productId = link.dataset.productId;
       removeFromCart(productId);
 
-      renderCheckoutHeader();
       renderOrderSummary();
       renderPaymentSummary();
+      renderCheckoutHeader();
     });
   });
 
@@ -180,9 +181,9 @@ export function renderOrderSummary() {
       );
       quantityLabel.innerHTML = newQuantity;
 
-      renderCheckoutHeader();
       // renderOrderSummary();
       renderPaymentSummary();
+      renderCheckoutHeader();
     }
   }
 

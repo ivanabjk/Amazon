@@ -1,3 +1,5 @@
+import {validDeliveryOption} from './deliveryOptions.js'
+
 export let cart;
 
 loadFromStorage();
@@ -38,7 +40,10 @@ export function addToCart(productId) {
     `.js-quantity-selector-${productId}`
   );
 
-  const quantity = Number(quantitySelector.value);
+  let quantity = 1;
+
+  if(quantitySelector != null)
+    quantity = Number(quantitySelector.value);
 
   if (matchingItem) {
     matchingItem.quantity += quantity;
@@ -73,6 +78,10 @@ export function updateDeliveryOption(productId, deliveryOptionId) {
       matchingItem = cartItem;
     }
   });
+
+  if(!matchingItem) return;
+
+  if(!validDeliveryOption(deliveryOptionId)) return;
 
   matchingItem.deliveryOptionId = deliveryOptionId;
 

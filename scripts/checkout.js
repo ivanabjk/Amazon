@@ -19,9 +19,9 @@ async function loadPage() {
     console.log(`${error} \nPlease try again.`);
   }
 
-  renderCheckoutHeader();
   renderOrderSummary();
   renderPaymentSummary();
+  renderCheckoutHeader();
 }
 
 loadPage();
