@@ -3,19 +3,42 @@ import { orders } from "../data/orders.js";
 import dayjs from "https://unpkg.com/dayjs@1.11.10/esm/index.js";
 import { formatCurrency } from "./utils/money.js";
 import { addToCart } from "../data/cart.js";
-import {updateCartQuantity} from "./utils/pageHeader.js";
+import { updateCartQuantity } from "./utils/pageHeader.js";
 import { calculateDeliveryDate } from "../data/deliveryOptions.js";
 
 async function loadPage() {
   await loadProductsFetch();
   updateCartQuantity();
 
+  const url = new URL(window.location.href);
+  const search = url.searchParams.get("search");
+
+  console.log(search);
+
   let ordersHTML = "";
 
   if (orders.length === 0) {
-    document.querySelector('.js-page-title').innerText = "No Orders Have Been Made";
+    document.querySelector(".js-page-title").innerText =
+      "No Orders Have Been Made";
   } else {
-    document.querySelector('.js-page-title').innerText = "Your Orders";
+    let filteredOrders = orders;
+
+    if (search) {
+      filteredOrders = orders.filter((order) => {
+        return order.products.some((productDetails) => {
+          const product = getProduct(productDetails.productId);
+          return product.name.toLowerCase().includes(search.toLowerCase());
+        });
+      });
+    }
+
+    if (filteredOrders.length === 0) {
+      document.querySelector(".js-page-title").innerText =
+        `No orders contain a product matching "${search}"`;
+      
+    } else {
+      document.querySelector(".js-page-title").innerText = "Your Orders";
+    }
 
     orders.forEach((order) => {
       const orderTimeString = dayjs(order.orderTime).format("MMMM D");
@@ -67,7 +90,7 @@ async function loadPage() {
 
               <div class="product-delivery-date">
                 Arriving on: ${dayjs(
-                  productDetails.estimatedDeliveryTime
+                  productDetails.estimatedDeliveryTime,
                 ).format("MMMM D")}
               </div>
 
@@ -112,6 +135,23 @@ async function loadPage() {
         }, 1000);
       });
     });
+
+    document
+      .querySelector(".js-search-button")
+      .addEventListener("click", () => {
+        const search = document.querySelector(".js-search-bar").value;
+        window.location.href = `orders.html?search=${search}`;
+      });
+
+    document
+      .querySelector(".js-search-bar")
+      .addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault(); // prevent form submission / page reload
+          const search = event.target.value;
+          window.location.href = `orders.html?search=${search}`;
+        }
+      });
   }
 }
 

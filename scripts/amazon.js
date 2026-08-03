@@ -11,10 +11,8 @@ function renderProductsGrid() {
   let productsHTML = "";
 
   const url = new URL(window.location.href);
-  const search = url.searchParams.get("search").toLocaleLowerCase();
+  const search = url.searchParams.get("search");
 
-  console.log("url:" + url);
-  console.log("search:" + search);
   let filteredProducts = products;
 
   if (search) {
@@ -28,7 +26,7 @@ function renderProductsGrid() {
         }
       });
 
-      return matchingKeyword || product.name.toLowerCase().includes(search);
+      return matchingKeyword || product.name.toLowerCase().includes(search.toLowerCase());
     });
   }
 
