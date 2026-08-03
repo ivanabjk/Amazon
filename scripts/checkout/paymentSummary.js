@@ -3,6 +3,7 @@ import { getProduct } from "../../data/products.js";
 import { getDeliveryOption } from "../../data/deliveryOptions.js";
 import { formatCurrency } from "../utils/money.js";
 import { orders, addOrder } from "../../data/orders.js";
+import { calculateDeliveryDate } from "../../data/deliveryOptions.js";
 
 export function renderPaymentSummary() {
   let productPriceCents = 0;
@@ -21,8 +22,7 @@ export function renderPaymentSummary() {
   const totalCents = totalBeforeTaxCents + taxCents;
 
   const totalQuantity = getTotalCartQuantity();
-  
-  
+
   const paymentSummaryHTML = `
         <div class="payment-summary-title">
             Order Summary
@@ -72,26 +72,30 @@ export function renderPaymentSummary() {
 
   document.querySelector(".js-payment-summary").innerHTML = paymentSummaryHTML;
 
-  document
-    .querySelector(".js-place-order")
-    .addEventListener("click", async () => {
-      try {
-        const response = await fetch("https://supersimplebackend.dev/orders", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            cart: cart,
-          }),
-        });
+  document.querySelector(".js-place-order").addEventListener("click", () => {
+    if (cart.length === 0 || getTotalCartQuantity() === 0) {
+      alert("Your cart is empty. Add items before placing an order.");
+      return;
+    }
 
-        const order = await response.json();
-        addOrder(order);
-      } catch (error) {
-        console.log('Unexpected error.');
-      }
+    const order = {
+      id: crypto.randomUUID(),
+      orderTime: new Date().toISOString(),
+      products: cart.map((cartItem) => {
+        const product = getProduct(cartItem.productId);
+        const deliveryOption = getDeliveryOption(cartItem.deliveryOptionId);
 
-      window.location.href = 'orders.html';
-    });
+        return {
+          productId: cartItem.productId,
+          quantity: cartItem.quantity,
+          variation: null,
+          estimatedDeliveryTime: calculateDeliveryDate(deliveryOption),
+        };
+      }),
+      totalCostCents: totalCents,
+    };
+
+    addOrder(order);
+    window.location.href = "orders.html";
+  });
 }

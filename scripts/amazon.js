@@ -1,8 +1,11 @@
 import { cart, addToCart, getTotalCartQuantity } from "../data/cart.js";
-import { products, loadProducts } from "../data/products.js";
+import { products, loadProductsFetch } from "../data/products.js";
 import { formatCurrency } from "./utils/money.js";
+import { updateCartQuantity } from "./utils/pageHeader.js";
 
-loadProducts(renderProductsGrid);
+loadProductsFetch().then(() => {
+  renderProductsGrid();
+});
 
 function renderProductsGrid() {
   let productsHTML = "";
@@ -68,13 +71,6 @@ function renderProductsGrid() {
   document.querySelector(".js-product-grid").innerHTML = productsHTML;
 
   updateCartQuantity();
-
-  function updateCartQuantity(addedMessageTimeoutId) {
-    
-    const cartQuantity = getTotalCartQuantity();
-
-    document.querySelector(".js-cart-quantity").innerHTML = cartQuantity;
-  }
 
   document.querySelectorAll(".js-add-to-cart").forEach((button) => {
     let addedMessageTimeoutId;
