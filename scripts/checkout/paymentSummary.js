@@ -1,9 +1,11 @@
-import { cart, getTotalCartQuantity } from "../../data/cart.js";
+import { cart, clearCart, getTotalCartQuantity } from "../../data/cart.js";
 import { getProduct } from "../../data/products.js";
 import { getDeliveryOption } from "../../data/deliveryOptions.js";
 import { formatCurrency } from "../utils/money.js";
 import { orders, addOrder } from "../../data/orders.js";
 import { calculateDeliveryDate } from "../../data/deliveryOptions.js";
+import { renderCheckoutHeader } from "./checkoutHeader.js";
+import { renderOrderSummary } from "./orderSummary.js";
 
 export function renderPaymentSummary() {
   let productPriceCents = 0;
@@ -96,6 +98,28 @@ export function renderPaymentSummary() {
     };
 
     addOrder(order);
-    window.location.href = "orders.html";
+    clearCart();
+
+    renderOrderSummary();
+    renderPaymentSummary();
+    renderCheckoutHeader();
+
+    // window.location.href = "orders.html";
+
+    // Display popup
+    document.querySelector(".js-order-popup").style.display = "flex";
+
+    document.querySelector(".js-check-orders").addEventListener("click", () => {
+      window.location.href = "orders.html";
+    });
+    document
+      .querySelector(".js-back-to-amazon")
+      .addEventListener("click", () => {
+        window.location.href = "amazon.html";
+      });
+
+    document.querySelector(".popup-close").addEventListener("click", () => {
+      document.querySelector(".js-order-popup").style.display = "none";
+    });
   });
 }
