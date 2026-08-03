@@ -22,13 +22,20 @@ async function loadPage() {
   const today = dayjs().startOf("day"); // clamp to midnight
   const orderTime = dayjs(order.orderTime).startOf("day");
   const deliveryTime = dayjs(
-    productDetails.estimatedDeliveryTime + " " + orderTime.year(),
+    `${productDetails.estimatedDeliveryTime} ${orderTime.year()}`,
     "dddd, MMMM D YYYY",
   ).startOf("day");
 
-  const percentProgress =
-    (today.diff(orderTime, "day") / deliveryTime.diff(orderTime, "day")) * 100;
+  const totalDays = deliveryTime.diff(orderTime, "day");
+  const elapsedDays = today.diff(orderTime, "day");
 
+  const percentProgress = (elapsedDays / totalDays) * 100;
+
+  console.log("totalDays: " + totalDays);
+  console.log("elapsedDays: " + elapsedDays);
+  console.log("Percent progress: " + percentProgress);
+
+  
   const trackingHTML = `
         <a class="back-to-orders-link link-primary" href="orders.html">
           View all orders
